@@ -106,7 +106,7 @@ from fastapi import Query # Utilizado para personalização de Querys, por exemp
 from typing import Annotated
 
 @app.get("/items/")
-async def read_items(q: Annotated[list[str] | None, Query(title="Query String", description="Is a query description" ,max_length=3, alias="item-querry")] = ['foo', 'bar', 'cable']): # Define que o valor Query(max_length = 3) é o máximo
+async def read_items(q: Annotated[list[str] | None, Query(title="Query String", description="Esse endpoint está descontinuado" ,max_length=3, alias="item-querry", deprecated=True)] = ['foo', 'bar', 'cable']): # Define que o valor Query(max_length = 3) é o máximo
     # results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
     if q is not None:
         # results.update({"q": q}) -> ou results['q'] = q

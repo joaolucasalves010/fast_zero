@@ -95,7 +95,7 @@ async def create_product(product: Product):
     product_dict = product.model_dump()
     if product.tax is not None:
         price_with_tax = product.price + product.tax
-        product_dict['price_with_tax'] = product.price + product.tax
+        product_dict['price_with_tax'] = price_with_tax
     return product_dict
 
 @app.put("/producrs/{product_id}")

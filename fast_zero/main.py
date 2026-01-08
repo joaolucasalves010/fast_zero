@@ -82,13 +82,7 @@ async def read_book(book_id: int | None = None, book_name: str | None = None, q:
     return "Book not found"
 
 # Corpo da requisição
-from pydantic import BaseModel
-
-class Product(BaseModel):
-    name: str
-    description: str | None = None
-    price: float
-    tax: float | None = None
+from products import Product
 
 @app.post("/products/")
 async def create_product(product: Product):
@@ -105,3 +99,16 @@ async def update_product(product_id: int, product: Product, q: str | None = None
     if q:
         result['q'] = q
     return result
+
+# Parâmetros de consulta e validações de string
+
+from fastapi import Query # Utilizado para personalização de Querys, por exemplo adicionar max_length
+from typing import Annotated
+
+@app.get("/items/")
+async def read_items(q: Annotated[list[str] | None, Query()] = None): # Define que o número máximo de q é 50 caracteres
+    # results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q is not None:
+        # results.update({"q": q}) -> ou results['q'] = q
+        query_items = {"q": q}
+    return query_items

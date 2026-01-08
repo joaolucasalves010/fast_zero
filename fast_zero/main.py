@@ -60,3 +60,22 @@ async def get_model(model_name: ModelName):
 @app.get("/files/{file_path:path}")
 async def read_file(file_path: str):
     return {"file_path": file_path}
+
+
+fake_books_db = [{"book_id": 1, "book_name": "Harry Potter"}, {"book_id": 2, "book_name": "Ice And Fire"}, {"book_id": 3, "book_name": "Grokking Algorithms"}]
+
+@app.get("/books/")
+async def read_book(book_id: int | None = None, book_name: str | None = None, q: bool | None = False):
+    for book in fake_books_db:
+        if book_id is not None and book_id == book["book_id"]:
+            if not q:
+                return {"book_id": book['book_id'], "book_name": book['book_name']}
+            else:
+                return {"book_id": book['book_id'], "book_name": book['book_name'], "description": f"{book['book_name']} is a nice book, have a long description"}
+        elif book_name is not None and book_name == book['book_name']:
+            if not q:
+                return {"book_id": book['book_id'], "book_name": book['book_name']}
+            else:
+                return {"book_id": book['book_id'], "book_name": book['book_name'], "description": f"{book['book_name']} is a nice book, have a long description"}
+            
+    return "Book not found"

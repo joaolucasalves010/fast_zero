@@ -92,7 +92,7 @@ async def create_product(product: Product):
         product_dict['price_with_tax'] = price_with_tax
     return product_dict
 
-@app.put("/producrs/{product_id}")
+@app.put("/products/{product_id}")
 async def update_product(product_id: int, product: Product, q: str | None = None):
     product_dict = product.model_dump()
     result = {"product_id": product_id, **product_dict}
@@ -106,9 +106,14 @@ from fastapi import Query # Utilizado para personalização de Querys, por exemp
 from typing import Annotated
 
 @app.get("/items/")
-async def read_items(q: Annotated[list[str] | None, Query()] = None): # Define que o número máximo de q é 50 caracteres
+async def read_items(q: Annotated[list[str] | None, Query(title="Query String", description="Is a query description" ,max_length=3, alias="item-querry")] = ['foo', 'bar', 'cable']): # Define que o valor Query(max_length = 3) é o máximo
     # results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
     if q is not None:
         # results.update({"q": q}) -> ou results['q'] = q
         query_items = {"q": q}
+    elif q is None:
+        query_items = {"q": "q is none"}
     return query_items
+
+
+# Query(alias='item-querry') -> se quisermos definir um valor para q, então utilizados agora ?item-querry

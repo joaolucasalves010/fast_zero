@@ -6,10 +6,6 @@ app = FastAPI(title="Estudos FastAPI")
 async def read_root():
     return {"message": "Olá Mundo!"}
 
-# Parâmetro com tipagem
-@app.get('/items/{item_id}')
-async def read_item(item_id: int):
-    return {"item_id": item_id}
 
 # Parâmetros devem ser definidos em ordem.
 
@@ -79,7 +75,7 @@ async def read_book(book_id: int | None = None, book_name: str | None = None, q:
             else:
                 return {"book_id": book['book_id'], "book_name": book['book_name'], "description": f"{book['book_name']} is a nice book, have a long description"}
             
-    return "Book not found"
+    return {"detail": "Book not found"}
 
 # Corpo da requisição
 from products import Product
@@ -136,3 +132,12 @@ async def read_id(id: Annotated[str | None, AfterValidator(check_item_id)] = Non
     else:
         id, item = random.choice([*data.items()])
     return {"id": id, "name": item}
+
+# Parâmetro com tipagem e parâmetros de path e validações númericas
+from fastapi import Path
+@app.get('/items/{item_id}')
+async def read_items(item_id: Annotated[int, Path(title="The ID of the item to get")], q: Annotated[str | None, Query(alias="item-query")] = None):
+    results = {"item_id": item_id}
+    if q is not None:
+        results['q'] = q
+    return results

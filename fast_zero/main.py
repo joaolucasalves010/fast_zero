@@ -104,16 +104,35 @@ async def update_product(product_id: int, product: Product, q: str | None = None
 
 from fastapi import Query # Utilizado para personalização de Querys, por exemplo adicionar max_length
 from typing import Annotated
+from pydantic import AfterValidator
 
 @app.get("/items/")
-async def read_items(q: Annotated[list[str] | None, Query(title="Query String", description="Esse endpoint está descontinuado" ,max_length=3, alias="item-querry", deprecated=True)] = ['foo', 'bar', 'cable']): # Define que o valor Query(max_length = 3) é o máximo
-    # results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
-    if q is not None:
-        # results.update({"q": q}) -> ou results['q'] = q
-        query_items = {"q": q}
-    elif q is None:
-        query_items = {"q": "q is none"}
-    return query_items
-
+async def read_items(hidden_query: Annotated[str | None, Query(include_in_schema=False)] = None): # Define que o valor Query(max_length = 3) é o máximo
+    if hidden_query:
+        return {"hidden_query": hidden_query}
+    else:
+        return {"hidden_query": "Not Found"}
 
 # Query(alias='item-querry') -> se quisermos definir um valor para q, então utilizados agora ?item-querry
+# include_in_schema = False -> exclui um parâmetro da API das documentações deixando ela "escondida"
+
+import random
+
+data = {
+    "isbn-9781529046137": "The Hitchhiker's Guide to the Galaxy",
+    "imdb-tt0371724": "The Hitchhiker's Guide to the Galaxy",
+    "isbn-9781439512982": "Isaac Asimov: The Complete Stories, Vol. 2",
+}
+
+def check_item_id(id: str):
+    if not id.startswith(('isbn-', 'imdb-')):
+        raise ValueError("Invalid ID format")
+    return id
+
+@app.get('/book_or_film')
+async def read_id(id: Annotated[str | None, AfterValidator(check_item_id)] = None):
+    if id:
+        item = data.get(id)
+    else:
+        id, item = random.choice([*data.items()])
+    return {"id": id, "name": item}

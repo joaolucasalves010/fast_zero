@@ -135,9 +135,29 @@ async def read_id(id: Annotated[str | None, AfterValidator(check_item_id)] = Non
 
 # Parâmetro com tipagem e parâmetros de path e validações númericas
 from fastapi import Path
+
+"""
+
 @app.get('/items/{item_id}')
 async def read_items(item_id: Annotated[int, Path(title="The ID of the item to get")], q: Annotated[str | None, Query(alias="item-query")] = None):
     results = {"item_id": item_id}
     if q is not None:
         results['q'] = q
     return results
+
+"""
+
+# Ordenação de parâmetros
+@app.get("/items/{item_id}")
+async def read_items(item_id: Annotated[int, Path(title="The item ID to get item", gt=0, le=1000)], q: str, item_size: Annotated[float, Query(gt=0, le=10.5)] = None): # gt e le são validações númericas
+    results = {"item_id": item_id}
+    if q:
+        results['q'] = q
+    if item_size:
+        results['item_size'] = item_size
+    return results
+
+
+# ge = maior ou igual
+# gt = maior que 
+# le = menor que ou igual

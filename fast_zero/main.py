@@ -33,7 +33,7 @@ from user import User
 async def update_item(
     item_id: Annotated[int, Path(title="The ID of the item to get", ge=0, le=1000)],
     importance: Annotated[int, Body()],
-    item: Item | None = None,
+    item: Annotated[Item, Body(embed=True)],
     user: User | None = None,
     q: str | None = None,
 ):

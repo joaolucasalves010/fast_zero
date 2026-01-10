@@ -1,7 +1,12 @@
 from products import Product
 
-from fastapi import FastAPI
-app = FastAPI()
+from fastapi import FastAPI, Path
+from typing import Annotated
+app = FastAPI(title="Estudos FastAPI")
+
+@app.get("/")
+async def home():
+    return {"message": "Hello World"}
 
 @app.post("/products/")
 async def create_product(product: Product):
@@ -18,3 +23,23 @@ async def update_product(product_id: int, product: Product, q: str | None = None
     if q:
         result['q'] = q
     return result
+
+from fastapi import Body
+from item import Item
+from user import User
+
+# Multiplos parâmetros de corpo
+@app.put("/items/{item_id}")
+async def update_item(
+    item_id: Annotated[int, Path(title="The ID of the item to get", ge=0, le=1000)],
+    importance: Annotated[int, Body()],
+    item: Item | None = None,
+    user: User | None = None,
+    q: str | None = None,
+):
+    results = {"item_id": item_id}
+    if q:
+        results.update({"q": q})
+    if item:
+        results.update({"item": item})
+    return {"item_id": item_id, "item": item, "user": user, "importance": importance}

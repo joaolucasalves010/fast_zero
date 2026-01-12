@@ -49,3 +49,11 @@ from offer import Offer
 @app.post("/offers/")
 async def create_offer(offer: Offer):
     return offer
+
+from image import Image
+@app.post("/images/multiple/")
+async def create_multiple_images(images: list[Image]):
+    images_name = []
+    for image in images:
+        images_name.append(image.name)
+    return images_name

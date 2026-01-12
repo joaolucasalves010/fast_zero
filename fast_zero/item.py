@@ -8,4 +8,5 @@ class Item(BaseModel):
     tax: float | None = None
     # tags: list[str] = [] -> lista que aceita somente strings
     tags: set[str] = set() # -> por ser um campo tags, não pode ter valor repetido então definimos um conjunto que aceita somente tring
-    image: Image | None = None # Modelo aninhado
+    # image: Image | None = None -> Modelo aninhado
+    images: list[Image] | None = None # -> BaseModel como subtipo

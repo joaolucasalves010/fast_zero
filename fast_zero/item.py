@@ -5,3 +5,5 @@ class Item(BaseModel):
     description: str | None = Field(default=None, title="The description of the item", max_length=300)
     price: float = Field(gt=0, title="The price must be greater than zero")
     tax: float | None = None
+    # tags: list[str] = [] -> lista que aceita somente strings
+    tags: set[str] = set() # -> por ser um campo tags, não pode ter valor repetido então definimos um conjunto que aceita somente tring

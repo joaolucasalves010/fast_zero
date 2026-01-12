@@ -43,3 +43,9 @@ async def update_item(
     if item:
         results.update({"item": item})
     return {"item_id": item_id, "item": item, "user": user, "importance": importance}
+
+from offer import Offer
+
+@app.post("/offers/")
+async def create_offer(offer: Offer):
+    return offer

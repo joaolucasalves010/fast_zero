@@ -57,3 +57,9 @@ async def create_multiple_images(images: list[Image]):
     for image in images:
         images_name.append(image.name)
     return images_name
+
+from fastapi import Cookie
+
+@app.get("/items/")
+async def read_items(ads_id: Annotated[str | None, Cookie()] = None):
+    return {"ads_id": ads_id} # retorna null

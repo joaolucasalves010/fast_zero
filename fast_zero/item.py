@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field # Field -> √© usado para adicionar valida√
 from image import Image # Importando classe BasedModel
 
 class Item(BaseModel):
-    name: str
+    name: str = Field(examples=["Example name"])
     description: str | None = Field(default=None, title="The description of the item", max_length=300)
     price: float = Field(gt=0, title="The price must be greater than zero")
     tax: float | None = Field(default=None, examples=[3.2])

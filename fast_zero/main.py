@@ -60,12 +60,13 @@ async def create_multiple_images(images: list[Image]):
 
 
 from fastapi import Header
+from common_headers import CommonHeaders
 
 @app.get("/items_header/")
 # async def read_items_header(user_agent: Annotated[str | None, Header()] = None): convert_underscores = False -> para de converter header snake_case para sublinhados
 #     return {'user_agent': user_agent}
-async def read_items_header(x_token: Annotated[list[str] | None, Header()] = None):
-    return {'X-Token Values': x_token}
+async def read_items_header(headers: Annotated[CommonHeaders, Header()]):
+    return headers
 
 
 from fastapi import Cookie

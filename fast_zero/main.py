@@ -60,6 +60,14 @@ async def create_multiple_images(images: list[Image]):
 
 from fastapi import Cookie
 
-@app.get("/items/")
-async def read_items(ads_id: Annotated[str | None, Cookie()] = None):
+@app.get("/items_cookie/")
+async def read_items_cookie(ads_id: Annotated[str | None, Cookie()] = None):
     return {"ads_id": ads_id} # retorna null
+
+from fastapi import Header
+
+@app.get("/items_header/")
+# async def read_items_header(user_agent: Annotated[str | None, Header()] = None): convert_underscores = False -> para de converter header snake_case para sublinhados
+#     return {'user_agent': user_agent}
+async def read_items_header(x_token: Annotated[list[str] | None, Header()] = None):
+    return {'X-Token Values': x_token}

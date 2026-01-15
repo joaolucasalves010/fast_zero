@@ -75,3 +75,15 @@ from cookie import Cookies
 @app.get("/items_cookie/")
 async def read_items_cookie(cookies: Annotated[Cookies, Cookie()]):
     return cookies
+
+
+# Model de resposta - Tipo de retorno
+items = []
+@app.post("/items/")
+async def create_item(item: Item) -> Item:
+    items.append(item)
+    return item
+
+@app.get("/items/")
+async def read_items() -> list[Item]:
+    return [*items, Item(name="Portal Gun", price=42.0),Item(name="Plumbus", price=32.0)]

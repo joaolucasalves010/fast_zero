@@ -87,3 +87,11 @@ async def create_item(item: Item) -> Item:
 @app.get("/items/")
 async def read_items() -> list[Item]:
     return [*items, Item(name="Portal Gun", price=42.0),Item(name="Plumbus", price=32.0)]
+
+from user_in import UserIn
+from user_out import UserOut
+
+
+@app.post("/user/", response_model=UserOut) # response_model retorna o model UserOut para a rota 
+async def create_user(user: UserIn) -> any:
+    return user

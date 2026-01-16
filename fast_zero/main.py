@@ -29,20 +29,20 @@ from item import Item
 from user import User
 
 # Multiplos parâmetros de corpo
-@app.put("/items/{item_id}")
-async def update_item(
-    item_id: Annotated[int, Path(title="The ID of the item to get", ge=0, le=1000)],
-    importance: Annotated[int, Body()],
-    item: Annotated[Item, Body(embed=True)], # retorna um JSON com chave com o nome do parâmetro com o embed 
-    user: User | None = None,
-    q: str | None = None,
-):
-    results = {"item_id": item_id}
-    if q:
-        results.update({"q": q})
-    if item:
-        results.update({"item": item})
-    return {"item_id": item_id, "item": item, "user": user, "importance": importance}
+# @app.put("/items/{item_id}")
+# async def update_item(
+#     item_id: Annotated[int, Path(title="The ID of the item to get", ge=0, le=1000)],
+#     importance: Annotated[int, Body()],
+#     item: Annotated[Item, Body(embed=True)], retorna um JSON com chave com o nome do parâmetro com o embed 
+#     user: User | None = None,
+#     q: str | None = None,
+# ):
+#     results = {"item_id": item_id}
+#     if q:
+#         results.update({"q": q})
+#     if item:
+#         results.update({"item": item})
+#     return {"item_id": item_id, "item": item, "user": user, "importance": importance}
 
 from offer import Offer
 
@@ -104,3 +104,14 @@ async def get_portal(teleport: bool = False) -> Response:
     if teleport:
         return RedirectResponse(url="https://www.youtube.com/watch?v=dQw4w9WgXcQ")
     return JSONResponse(content={"message": "Você está dentro de um portal interdimensional."})
+
+
+items = {
+    "foo": {"name": "Foo", "price": 50.2},
+    "bar": {"name": "Bar", "description": "The bartenders", "price": 62, "tax": 20.2},
+    "baz": {"name": "Baz", "description": None, "price": 50.2, "tax": 10.5, "tags": []}
+}
+
+@app.get("/items/{item_id}", response_model=Item, response_model_exclude_unset=True) # response_model_exclude_unset remove os parâmetros opcionais com valor null ou valores padrão
+async def read_item(item_id: str):
+    return items[item_id]

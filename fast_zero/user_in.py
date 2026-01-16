@@ -1,7 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from base_user import BaseUser
 
-class UserIn(BaseModel):
-    name: str
-    email: EmailStr
+class UserIn(BaseUser):
     password: str
-    full_name: str | None = None

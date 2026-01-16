@@ -90,8 +90,17 @@ async def read_items() -> list[Item]:
 
 from user_in import UserIn
 from user_out import UserOut
+from base_user import BaseUser
 
-
-@app.post("/user/", response_model=UserOut) # response_model retorna o model UserOut para a rota 
-async def create_user(user: UserIn) -> any:
+@app.post("/user/") # response_model retorna o model UserOut para a rota 
+async def create_user(user: UserIn) -> BaseUser:
     return user
+
+from fastapi import Response
+from fastapi.responses import JSONResponse, RedirectResponse
+
+@app.get("/portal/")
+async def get_portal(teleport: bool = False) -> Response:
+    if teleport:
+        return RedirectResponse(url="https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+    return JSONResponse(content={"message": "Você está dentro de um portal interdimensional."})

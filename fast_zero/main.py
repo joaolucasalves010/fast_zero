@@ -124,8 +124,8 @@ def fake_save_user(user_in: UserIn):
     print("User saved! ..not really")
     return user_in_db
 
-
-@app.post("/user/", response_model=UserOut) # response_model retorna o model UserOut para a rota 
+from fastapi import status
+@app.post("/user/", response_model=UserOut, status_code=) # response_model retorna o model UserOut para a rota 
 async def create_user(user_in: UserIn):
     user_saved = fake_save_user(user_in)
     return user_saved

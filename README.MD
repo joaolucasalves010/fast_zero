@@ -9,10 +9,6 @@
     Do zero até projetos mais estruturados e profissionais
   </p>
 
-  <p>
-    <em>"Faça simples. Faça rápido. Faça bonito."</em> ✨
-  </p>
-
 </div>
 
 <br>

@@ -88,13 +88,7 @@ async def create_item(item: Item) -> Item:
 async def read_items() -> list[Item]:
     return [*items, Item(name="Portal Gun", price=42.0),Item(name="Plumbus", price=32.0)]
 
-from user_in import UserIn
-from user_out import UserOut
-from base_user import BaseUser
 
-@app.post("/user/") # response_model retorna o model UserOut para a rota 
-async def create_user(user: UserIn) -> BaseUser:
-    return user
 
 from fastapi import Response
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -115,3 +109,23 @@ items = {
 @app.get("/items/{item_id}", response_model=Item, response_model_exclude_unset=True) # response_model_exclude_unset remove os parâmetros opcionais com valor null ou valores padrão
 async def read_item(item_id: str):
     return items[item_id]
+
+from user_in_db import UserInDB
+from user_in import UserIn
+from user_out import UserOut
+from base_user import BaseUser
+
+def fake_password_hasher(raw_password: str):
+    return "supersecret" + raw_password
+
+def fake_save_user(user_in: UserIn):
+    hashed_password = fake_password_hasher(user_in.password)
+    user_in_db = UserInDB(**user_in.model_dump(), hashed_password=hashed_password) # user_in.model_dump() transforma um objeto model em dict
+    print("User saved! ..not really")
+    return user_in_db
+
+
+@app.post("/user/", response_model=UserOut) # response_model retorna o model UserOut para a rota 
+async def create_user(user_in: UserIn):
+    user_saved = fake_save_user(user_in)
+    return user_saved

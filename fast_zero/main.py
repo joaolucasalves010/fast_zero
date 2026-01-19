@@ -4,9 +4,9 @@ from fastapi import FastAPI, Path
 from typing import Annotated
 app = FastAPI(title="Estudos FastAPI")
 
-@app.get("/")
-async def home():
-    return {"message": "Hello World"}
+# @app.get("/")
+# async def home():
+#     return {"message": "Hello World"}
 
 @app.post("/products/")
 async def create_product(product: Product):
@@ -138,3 +138,18 @@ from form_data import FormData
 @app.post("/login/")
 async def login(data: Annotated[FormData, Form()]):
     return data
+
+from fastapi import File, UploadFile
+from fastapi.responses import HTMLResponse
+
+@app.post("/files/")
+async def create_file(file: Annotated[bytes, File(description="A file read as bytes")] = None):
+    if file is None:
+        return {"message": "Not file sent"}
+    return {"file_size": len(file)}
+
+@app.post("/uploadfile/")
+async def create_upload_file(file: Annotated[UploadFile, File(description="A file read as UploadFile")]= None):
+    if file is None:
+        return {"message": "Not upload file sent"}
+    return {"filename": file.filename}

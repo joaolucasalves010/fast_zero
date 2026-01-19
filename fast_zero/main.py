@@ -125,7 +125,15 @@ def fake_save_user(user_in: UserIn):
     return user_in_db
 
 from fastapi import status
-@app.post("/user/", response_model=UserOut, status_code=) # response_model retorna o model UserOut para a rota 
+@app.post("/user/", response_model=UserOut, status_code=201) # response_model retorna o model UserOut para a rota 
 async def create_user(user_in: UserIn):
     user_saved = fake_save_user(user_in)
     return user_saved
+
+# Dados de formulários
+
+from fastapi import Form
+
+@app.post("/login/")
+async def login(username: Annotated[str, Form()], password: Annotated[str, Form()]):
+    return {"username": username}

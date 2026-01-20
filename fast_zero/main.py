@@ -142,14 +142,29 @@ async def login(data: Annotated[FormData, Form()]):
 from fastapi import File, UploadFile
 from fastapi.responses import HTMLResponse
 
-@app.post("/files/")
-async def create_file(file: Annotated[bytes, File(description="A file read as bytes")] = None):
-    if file is None:
-        return {"message": "Not file sent"}
-    return {"file_size": len(file)}
+# @app.post("/files/")
+# async def create_file(file: Annotated[bytes, File(description="A file read as bytes")] = None):
+#     if file is None:
+#         return {"message": "Not file sent"}
+#     return {"file_size": len(file)}
 
 @app.post("/uploadfile/")
 async def create_upload_file(file: Annotated[UploadFile, File(description="A file read as UploadFile")]= None):
     if file is None:
         return {"message": "Not upload file sent"}
     return {"filename": file.filename}
+
+# formulários e arquivos da requisição
+@app.post("/files/")
+async def create_file(
+    file: Annotated[bytes, File()],
+    fileb:  Annotated[UploadFile, File()],
+    token:  Annotated[str, Form()]
+):
+    return {
+        "file_size": len(file), # tamanho do arquivo em bytes
+        "token": token, # str do token
+        "fileb_content_type": fileb.content_type, # conteúdo do arquivo
+        "filename": fileb.filename, # nome do arquivo,
+        # "file_size": fileb.size  -> tamanho do arquivo em bytes porém usando UploadFile
+    }

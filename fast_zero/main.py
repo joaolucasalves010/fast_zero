@@ -171,7 +171,9 @@ async def create_file(
 
 # Manipulação de erros
 from fastapi import HTTPException
+from fastapi import Request
 from fastapi.responses import JSONResponse
+from custom_exception import BadLanguageException
 
 fake_db_languages = [
     {"name": "Python"},
@@ -180,13 +182,20 @@ fake_db_languages = [
     {"name": "Rust"}
 ]
 
+
+# criando Exceptions personalizadas.
+@app.exception_handler(BadLanguageException)
+async def bad_language_exception(request: Request, exc: BadLanguageException):
+    return JSONResponse(status_code=418, content={"message": f"Oops! {exc.name} language. This a bad language..."})
+
 @app.get("/languages/{language_id}")
 async def read_languages(language_id: Annotated[str, Path(title="Read Language", description="Insira uma linguagem para buscar no banco de dados")]):
+    if language_id.lower().replace(" ", "") == 'java':
+        raise BadLanguageException(name="Java")
     for language in fake_db_languages:
         if language["name"].lower().replace(" ", "") == language_id.lower().replace(" ", ""):
             return JSONResponse({
-                "detail": "Linguagem encontrada com sucesso",
-                "language": language["name"],
+                "detail": f"Linguagem {language['name']} encontrada com sucesso",
             }, status_code=200)
     
     raise HTTPException(status_code=404, detail="Item not found", headers={"X-Error": "There Goes My Error"}) # não use return para Exceptions utiize raise melhor para segurança!

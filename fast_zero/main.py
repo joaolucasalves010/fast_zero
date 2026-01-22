@@ -168,3 +168,25 @@ async def create_file(
         "filename": fileb.filename, # nome do arquivo,
         # "file_size": fileb.size  -> tamanho do arquivo em bytes porém usando UploadFile
     }
+
+# Manipulação de erros
+from fastapi import HTTPException
+from fastapi.responses import JSONResponse
+
+fake_db_languages = [
+    {"name": "Python"},
+    {"name": "JavaScript"},
+    {"name": "Java"},
+    {"name": "Rust"}
+]
+
+@app.get("/languages/{language_id}")
+async def read_languages(language_id: Annotated[str, Path(title="Read Language", description="Insira uma linguagem para buscar no banco de dados")]):
+    for language in fake_db_languages:
+        if language["name"].lower().replace(" ", "") == language_id.lower().replace(" ", ""):
+            return JSONResponse({
+                "detail": "Linguagem encontrada com sucesso",
+                "language": language["name"],
+            }, status_code=200)
+    
+    raise HTTPException(status_code=404, detail="Item not found", headers={"X-Error": "There Goes My Error"}) # não use return para Exceptions utiize raise melhor para segurança!

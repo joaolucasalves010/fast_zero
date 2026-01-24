@@ -1,4 +1,5 @@
 # Exception personalizada
 class BadLanguageException(Exception):
-    def __init__(self, name: str):
+    def __init__(self, name: str, description: str):
         self.name = name
+        self.description = description

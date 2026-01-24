@@ -176,26 +176,66 @@ from fastapi.responses import JSONResponse
 from custom_exception import BadLanguageException
 
 fake_db_languages = [
-    {"name": "Python"},
-    {"name": "JavaScript"},
-    {"name": "Java"},
-    {"name": "Rust"}
+  {
+    "name": "Python",
+    "description": "Readable, friendly, and secretly judging your indentation."
+  },
+  {
+    "name": "JavaScript",
+    "description": "Runs everywhere and behaves… questionably."
+  },
+  {
+    "name": "Java",
+    "description": "Verbose, strict, and very proud of it."
+  },
+  {
+    "name": "Rust",
+    "description": "Safe, fast, and emotionally demanding."
+  }
 ]
 
 
 # criando Exceptions personalizadas.
 @app.exception_handler(BadLanguageException)
 async def bad_language_exception(request: Request, exc: BadLanguageException):
-    return JSONResponse(status_code=418, content={"message": f"Oops! {exc.name} language. This a bad language..."})
+    return JSONResponse(status_code=status.HTTP_418_IM_A_TEAPOT, content={"message": f"Oops! {exc.name} language. This a bad language...", "description": exc.description})
 
-@app.get("/languages/{language_id}")
+from fastapi import status
+# Configuração da operação de Rota
+@app.get("/languages/{language_id}", tags=["languages"])
 async def read_languages(language_id: Annotated[str, Path(title="Read Language", description="Insira uma linguagem para buscar no banco de dados")]):
     if language_id.lower().replace(" ", "") == 'java':
-        raise BadLanguageException(name="Java")
+        raise BadLanguageException(name="Java", description="Verbose, strict, and very proud of it.")
     for language in fake_db_languages:
         if language["name"].lower().replace(" ", "") == language_id.lower().replace(" ", ""):
             return JSONResponse({
                 "detail": f"Linguagem {language['name']} encontrada com sucesso",
-            }, status_code=200)
+                "description": f"{language["description"]}"
+            }, status_code=status.HTTP_200_OK)
     
-    raise HTTPException(status_code=404, detail="Item not found", headers={"X-Error": "There Goes My Error"}) # não use return para Exceptions utiize raise melhor para segurança!
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found", headers={"X-Error": "There Goes My Error"}) # não use return para Exceptions utiize raise melhor para segurança!
+
+from fastapi import Query
+from tags import Tags
+
+@app.post("/languages/", tags=[Tags.languages], summary="Cadastrar Linguagem", response_description="Language created", deprecated=True) # ou tags=["languages"]
+async def create_language(name: Annotated[str, Body()], description: Annotated[str, Body()] = None):
+    """
+    Documentação Markdown no docs da API
+
+    Cadastre uma linguagem no banco de dados.
+
+    - **name**
+    - **description**
+    """
+
+
+    for item in fake_db_languages:
+        if item["name"].lower() == name.lower():
+            return JSONResponse(content={"detail": "linguagem já existe"}, status_code=status.HTTP_409_CONFLICT)
+    language = {
+        "name": name,
+        "description": description
+    }
+    fake_db_languages.append(language)
+    return JSONResponse(content={"detail": "Linguagem adicionada com sucesso"}, status_code=status.HTTP_200_OK)

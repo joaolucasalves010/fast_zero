@@ -218,7 +218,7 @@ async def read_languages(language_id: Annotated[str, Path(title="Read Language",
 from fastapi import Query
 from tags import Tags
 
-@app.post("/languages/", tags=[Tags.languages], summary="Cadastrar Linguagem", response_description="Language created", deprecated=True) # ou tags=["languages"]
+@app.post("/languages/", tags=[Tags.languages], summary="Cadastrar Linguagem", response_description="Language created") # ou tags=["languages"]
 async def create_language(name: Annotated[str, Body()], description: Annotated[str, Body()] = None):
     """
     Documentação Markdown no docs da API
@@ -239,3 +239,14 @@ async def create_language(name: Annotated[str, Body()], description: Annotated[s
     }
     fake_db_languages.append(language)
     return JSONResponse(content={"detail": "Linguagem adicionada com sucesso"}, status_code=status.HTTP_200_OK)
+    
+
+from fastapi.encoders import jsonable_encoder # -> faz com que modelos pydantic ou valores sejam válidos como JSON
+
+fake_db = {}
+
+@app.put("/items/{id}", tags=["Items"])
+def update_item(id: str, item: Item):
+    json_compatible_item_data = jsonable_encoder(item)
+    fake_db[id] = json_compatible_item_data
+    return fake_db

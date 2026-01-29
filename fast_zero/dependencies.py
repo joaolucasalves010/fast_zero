@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Body
 
 app = FastAPI()
 
@@ -10,9 +10,12 @@ async def common_parameters(q: str | None = None, skip: int = 0, limit: int = 10
 CommonsDep = Annotated[dict, Depends(common_parameters)]
 
 @app.get("/items/")
-async def read_items(commons: CommonsDep):
+async def read_items(commons: CommonsDep, tag: str = None):
+    if tag:
+        commons["tag"] = tag
     return commons
 
 @app.get("/users/")
-async def read_users(commons: Annotated[dict, Depends(common_parameters)]):
+async def read_users(commons: Annotated[dict, Depends(common_parameters)], username: str):
+    commons.update(username)
     return commons

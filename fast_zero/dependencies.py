@@ -1,6 +1,7 @@
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, Body, Cookie
+from fastapi import Depends, FastAPI, Body, Cookie, Header, HTTPException
+from fastapi import status
 
 app = FastAPI()
 
@@ -51,3 +52,38 @@ async def read_query(query_or_default: Annotated[str, Depends(query_or_cookie_ex
 async def read_users(commons: Annotated[dict, Depends(common_parameters)], username: str):
     commons.update(username)
     return commons
+
+fake_db_languages = [
+  {
+    "name": "Python",
+    "description": "Readable, friendly, and secretly judging your indentation."
+  },
+  {
+    "name": "JavaScript",
+    "description": "Runs everywhere and behaves… questionably."
+  },
+  {
+    "name": "Java",
+    "description": "Verbose, strict, and very proud of it."
+  },
+  {
+    "name": "Rust",
+    "description": "Safe, fast, and emotionally demanding."
+  }
+]
+
+def verify_token(token: Annotated[str, Header()]):
+    if token != "fake-super-secret-token":
+        raise HTTPException(status_code=401, detail="Token secret invalid")
+    
+def verify_key(key: Annotated[str, Header()]):
+    if key != "fake-super-secret-key":
+        raise HTTPException(status_code=401, detail="Key secret invalid")
+    
+@app.get("/languages/{name}", dependencies=[Depends(verify_token), Depends(verify_key)])
+async def read_languages(name: str):
+    for language in fake_db_languages:
+        if language["name"].lower().strip() == name.lower().strip():
+            return language
+    
+    return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found language")

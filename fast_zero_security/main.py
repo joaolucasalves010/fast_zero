@@ -31,3 +31,13 @@ async def read_user_me(current_user: Annotated[User, Depends(get_current_user)])
 @app.get("/items/")
 async def read_items(token: Annotated[str, Depends(oauth2_scheme)]): # Depende do Bearer token no Header da requisição para funcionar
     return {"token": token}
+
+
+"""
+
+fluxo Password do Oauth2
+
+POST username/password -> be autentica -> retorna Bearer
+
+
+"""

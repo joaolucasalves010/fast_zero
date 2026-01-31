@@ -35,9 +35,17 @@ async def read_items(token: Annotated[str, Depends(oauth2_scheme)]): # Depende d
 
 """
 
-fluxo Password do Oauth2
+OAuth2 – Password Flow
 
-POST username/password -> be autentica -> retorna Bearer
+POST /token (username + password)
+        
+↓
+
+Backend autentica o usuário
+
+↓
+
+Retorna access_token (Bearer)
 
 
 """
